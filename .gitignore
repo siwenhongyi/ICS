@@ -1,0 +1,8 @@
+mm/search.py
+.idea/*
+__pycache__/*
+djangoProject/__*
+ICS/__pycache__/*
+ICS/migrations/__pycache__/*
+
+venv/*
