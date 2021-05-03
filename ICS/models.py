@@ -22,7 +22,7 @@ class userProfile(models.Model):
     user_id users profile
     """
     user_id = models.IntegerField(primary_key=True)
-    avatar = models.TextField(max_length=500,default="https://i.postimg.cc/nh33qHZ5/0d6de2b8-s.jpg")
+    avatar = models.TextField(max_length=500, default="https://i.postimg.cc/nh33qHZ5/0d6de2b8-s.jpg")
     email = models.EmailField(blank=True, null=True)
     nickname = models.CharField(max_length=200)
     qq = models.CharField(max_length=10, blank=True, null=True)
@@ -41,11 +41,14 @@ class iconLibs(models.Model):
     icon_libs_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=500)
     all_count = models.IntegerField(default=0)
-    created_user = models.CharField(max_length=32, blank=False, null=False)
+    created_user = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     slugs = models.SlugField(max_length=500)
     likes_count = models.IntegerField(default=0)
     is_private = models.BooleanField(default=False)
+    has_secret = models.IntegerField(default=0)
+    password = models.CharField(max_length=50, blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -88,7 +91,7 @@ class favorites(models.Model):
     """
     id = models.AutoField(primary_key=True)
     user_id = models.ForeignKey(to=user, to_field='user_id', on_delete=models.CASCADE)
-    data_id = models.ForeignKey(to=iconLibs, to_field='icon_libs_id', on_delete=models.CASCADE)
+    data_id = models.ForeignKey(to=data, to_field='data_id', on_delete=models.CASCADE)
 
 
 class likes(models.Model):
@@ -97,4 +100,4 @@ class likes(models.Model):
     """
     id = models.AutoField(primary_key=True)
     user_id = models.ForeignKey(to=user, to_field='user_id', on_delete=models.CASCADE)
-    libs_id = models.ForeignKey(to=data, to_field='data_id', on_delete=models.CASCADE)
+    libs_id = models.ForeignKey(to=iconLibs, to_field='icon_libs_id', on_delete=models.CASCADE)

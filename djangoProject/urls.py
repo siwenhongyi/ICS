@@ -25,6 +25,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', index),
     path('home/index', index),
+    path('manage/index', index),
+    path('user/center',index),
     path('complete/github/', complete),
     path('', include('social_django.urls', namespace='social')),
     path('search/index', index),

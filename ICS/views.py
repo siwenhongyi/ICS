@@ -6,7 +6,8 @@ from django.shortcuts import render
 
 import ICS.tools as my_tools
 from ICS.models import *
-from ICS.search import search
+from ICS.api_search import ApiSearch
+from ICS.api_user import ApiUser
 from djangoProject.settings import SOCIAL_AUTH_GITHUB_KEY, SOCIAL_AUTH_GITHUB_SECRET
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -55,7 +56,7 @@ def pub_info(req: HttpRequest):
         res["updated_at"] = u.updated_at.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
         res["weixin_code"] = str(u.weixin_code)
     resp["data"]["csrf"] = "W3kShn9G-eUNG01Ep8vomSVX2P0swV-zfqus"
-    resp["data"]["env"] ="prod"
+    resp["data"]["env"] = "prod"
     resp["data"]["iconCount"] = 12694244
     resp["data"]["user"] = res
 
@@ -98,13 +99,77 @@ def api(req: HttpRequest, **kwargs):
             "code": 200,
         }
         path = path.split('/')
-        icons = search(key=req.POST.get("q"), mode=path[0]).get_res()
+        icons = ApiSearch(key=req.POST.get("q"), mode=path[0]).get_res()
         icons_count = len(icons)
         resp["data"] = {
             "count": icons_count,
             m[path[0]]: icons,
         }
         return HttpResponse(json.dumps(resp), content_type="application/json")
+    elif path.find('user') != -1:
+        resp = {"code": 200}
+
+        client = ApiUser(request=req, path=my_tools.get_arg(path)[-1])
+        m = client.run()
+        if m is None:
+            resp["code"] = 300
+        resp["data"] = m
+        return HttpResponse(json.dumps(resp), content_type="application/json")
+    # 我上传的icon 我上传的插画
+    elif path.find("user/myuploads.json") != -1 or path.find('user/myUploadSvgs.json') != -1:
+        m = {"icons": []}
+        resp = {
+            "code": 200,
+            "data": m,
+        }
+        return HttpResponse(json.dumps(resp), content_type="application/json")
+    # 我的图标库
+    elif path.find('user/mycollections.json') != -1:
+        m = {"collections": []}
+        resp = {
+            "code": 200,
+            "data": m,
+        }
+        return HttpResponse(json.dumps(resp), content_type="application/json")
+    # 我收藏的图标
+    elif path.find('user/myfavorites.json') != -1:
+        m = {"favorites": []}
+        resp = {
+            "code": 200,
+            "data": m,
+        }
+        return HttpResponse(json.dumps(resp), content_type="application/json")
+    # 我收藏的图标库
+    elif path.find('user/myCollectionFavorite.json') != -1:
+        m = {"lists": []}
+        resp = {
+            "code": 200,
+            "data": m,
+        }
+        return HttpResponse(json.dumps(resp), content_type="application/json")
+    # 个人中心
+    elif path.find('user/detail.json') != -1:
+        m = dict()
+        m["alipay_code"] = ""
+        m["avatar"] = ""
+        m["bio"] = ""
+        m["id"]: 7187121
+        m["isXiaoer"] = False
+        m["nickname"] = "siwenhongyi"
+        m["qq"] = ""
+        m["show_email"] = "zmlhongyi@qq.com"
+        m["weixin_code"] = "//iconfont.alicdn.com/tfscom/TB1NcQ6GXXXXXcoXFXXwu0bFXXX.png"
+        resp = {
+            "code": 200,
+            "data": m,
+        }
+        return HttpResponse(json.dumps(resp), content_type="application/json")
+    elif path.find('logout') != -1:
+        resp = HttpResponseRedirect('/')
+        resp.delete_cookie("u")
+        return resp
+
+
     else:
         raise Http404
 
@@ -124,12 +189,5 @@ def complete(req):
     if len(user.objects.filter(user_id=u_id)) == 0:
         my_tools.add_user(userInfoDict)
     resp = HttpResponseRedirect('/')
-    resp.set_cookie("u", u_id)
-    return resp
-    resp = render(
-        req,
-        template_name='index.html',
-        content_type="text/html"
-    )
     resp.set_cookie("u", u_id)
     return resp

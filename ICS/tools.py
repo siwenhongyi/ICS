@@ -10,6 +10,9 @@ users = [10000, 10001, 10002]
 
 # static\out = open(os.path.join(path, 'out.txt'), mode='w')
 
+def get_arg(arg_str: str) -> list:
+    return arg_str.split('/')
+
 
 def get_svg(show_svg: str) -> str:
     show_svg = show_svg.replace(" ", "-")

@@ -4,9 +4,8 @@ import datetime
 from ICS.tools import run
 
 
-class search:
+class ApiSearch:
     def __init__(self, key: str, mode='icon'):
-        print(mode)
         self.key = key
         self.mode = mode
         # run()
@@ -60,7 +59,6 @@ class search:
     def get_illustration(self):
         res = list()
         ills = data.objects.filter(data_type='illustration').filter(Q(slug__icontains=self.key) | Q(name__icontains=self.key))
-        print(ills)
         for ill in ills:
             t = dict()
             flag = False
@@ -88,7 +86,6 @@ class search:
 
     def get_user(self):
         users = userProfile.objects.filter(nickname__icontains=int(self.key))
-        print(userProfile.objects.all())
         res = []
         for u in users:
             item = dict()
