@@ -22,6 +22,7 @@ class userProfile(models.Model):
     user_id users profile
     """
     user_id = models.IntegerField(primary_key=True)
+    bio = models.CharField(max_length=500, blank=True, null=True)
     avatar = models.TextField(max_length=500, default="https://i.postimg.cc/nh33qHZ5/0d6de2b8-s.jpg")
     email = models.EmailField(blank=True, null=True)
     nickname = models.CharField(max_length=200)

@@ -17,7 +17,9 @@ define('app/views/user/center', [
 					function (l, c) {
 						c = c.get('data')
 						;(a.data = c),
-							(a.data.ctoken = i.config().ctoken),
+							(a.data.csrfmiddlewaretoken = document.getElementsByName(
+								'csrfmiddlewaretoken'
+							)[0].value),
 							a.setView().then(function () {
 								a.binUpload()
 							})
@@ -46,7 +48,12 @@ define('app/views/user/center', [
 					c = this.data
 				for (l in c) c[l] = c[l] || ''
 				this.request().all(
-					[{ name: 'user_update', params: c }],
+					[
+						{
+							name: 'user_update',
+							params: c,
+						},
+					],
 					function (l, c) {
 						window.location.reload()
 					}

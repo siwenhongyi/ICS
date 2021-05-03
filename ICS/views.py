@@ -115,61 +115,10 @@ def api(req: HttpRequest, **kwargs):
             resp["code"] = 300
         resp["data"] = m
         return HttpResponse(json.dumps(resp), content_type="application/json")
-    # 我上传的icon 我上传的插画
-    elif path.find("user/myuploads.json") != -1 or path.find('user/myUploadSvgs.json') != -1:
-        m = {"icons": []}
-        resp = {
-            "code": 200,
-            "data": m,
-        }
-        return HttpResponse(json.dumps(resp), content_type="application/json")
-    # 我的图标库
-    elif path.find('user/mycollections.json') != -1:
-        m = {"collections": []}
-        resp = {
-            "code": 200,
-            "data": m,
-        }
-        return HttpResponse(json.dumps(resp), content_type="application/json")
-    # 我收藏的图标
-    elif path.find('user/myfavorites.json') != -1:
-        m = {"favorites": []}
-        resp = {
-            "code": 200,
-            "data": m,
-        }
-        return HttpResponse(json.dumps(resp), content_type="application/json")
-    # 我收藏的图标库
-    elif path.find('user/myCollectionFavorite.json') != -1:
-        m = {"lists": []}
-        resp = {
-            "code": 200,
-            "data": m,
-        }
-        return HttpResponse(json.dumps(resp), content_type="application/json")
-    # 个人中心
-    elif path.find('user/detail.json') != -1:
-        m = dict()
-        m["alipay_code"] = ""
-        m["avatar"] = ""
-        m["bio"] = ""
-        m["id"]: 7187121
-        m["isXiaoer"] = False
-        m["nickname"] = "siwenhongyi"
-        m["qq"] = ""
-        m["show_email"] = "zmlhongyi@qq.com"
-        m["weixin_code"] = "//iconfont.alicdn.com/tfscom/TB1NcQ6GXXXXXcoXFXXwu0bFXXX.png"
-        resp = {
-            "code": 200,
-            "data": m,
-        }
-        return HttpResponse(json.dumps(resp), content_type="application/json")
     elif path.find('logout') != -1:
         resp = HttpResponseRedirect('/')
         resp.delete_cookie("u")
         return resp
-
-
     else:
         raise Http404
 

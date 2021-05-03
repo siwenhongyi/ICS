@@ -25,6 +25,8 @@ class ApiUser:
             return self.get_my_like_libs()
         elif enum == 'detail.json':
             return self.get_my_center()
+        elif enum == 'update.json':
+            return self.update()
         else:
             return None
 
@@ -183,9 +185,91 @@ class ApiUser:
         res["favorites"] = m
         return res
 
-    def get_my_like_libs(self):\
-        
-        pass
+    def get_my_like_libs(self):
+        """
+        get all my like libs
+        :return:
+        """
+        u_id = int(self.req.COOKIES.get("u", "0"))
+        all_likes = likes.objects.filter(user_id=u_id)
+        res = dict()
+        m = list()
+        for like in all_likes:
+            one_like = dict()
+            lib = like.libs_id
+            CollectionFavorite = {
+                "collection_id": like.id,
+                "created_at": lib.created_at.strftime("%Y-%m-%dT%H:%M:%S.%f%z"),
+                "updated_at": lib.updated_at.strftime("%Y-%m-%dT%H:%M:%S.%f%z"),
+                "id": lib.icon_libs_id,
+                "user_id": lib.created_user,
+            }
+            one_like["CollectionFavorite"] = CollectionFavorite
+            all_icons = data.objects.filter(libs_belongs_to=lib.icon_libs_id)
+            one_like["all_count"] = len(all_icons)
+            one_like["created_user_id"] = lib.created_user
+            one_like["created_at"] = lib.created_at.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
+            one_like["updated_at"] = lib.updated_at.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
+            one_like["has_secret"] = lib.has_secret
+            one_like["id"] = like.id
+            one_like["likes_count"] = len(likes.objects.filter(libs_id=lib))
+            one_like["name"] = lib.name
+            one_like["show"] = 1
+            one_like["slug"] = lib.slugs
+            one_like["type"] = "icon"
+            favorite_count = 0
+            icons_count = 0
+            icons = list()
+            for icon in data.objects.filter(libs_belongs_to_id=lib.icon_libs_id):
+                one_icon = dict()
+                if not icon.is_private:
+                    icons_count += 1
+                favorite_count += len(favorites.objects.filter(data_id_id=icon.data_id))
+                one_icon["height"] = icon.height
+                one_icon["width"] = icon.width
+                one_icon["name"] = icon.name
+                one_icon["show_svg"] = icon.show_svg
+                icons.append(one_icon)
+            one_like["icons"] = icons
+            one_like["icons_count"] = icons_count
+            one_like["favorite_count"] = favorite_count
+            m.append(one_like)
+        res["lists"] = m
+        return res
 
     def get_my_center(self):
-        pass
+        u_id = int(self.req.GET.get("uid", "0"))
+        u = userProfile.objects.filter(user_id=u_id)
+        if len(u) != 1:
+            return None
+        u: userProfile = u.first()
+        res = {
+            "alipay_code": "",
+            "avatar": u.avatar,
+            "bio": u.bio,
+            "id": u.user_id,
+            "isXiaoer": False,
+            "nickname": u.nickname,
+            "qq": u.qq,
+            "show_email": u.email,
+            "weixin_code": str(u.weixin_code),
+        }
+        return res
+
+    def update(self):
+        u_id = int(self.req.POST.get("id", "0"))
+        u = userProfile.objects.filter(user_id=u_id)
+        if len(u) != 1:
+            return None
+        u: userProfile = u.first()
+        arg_dict = self.req.POST
+        u.avatar = arg_dict.get("avatar", "")
+        u.bio = arg_dict.get("bio", "")
+        u.email = arg_dict.get("show_email", "")
+        u.nickname = arg_dict.get("nickname", "")
+        qq = arg_dict.get("qq", "0")
+        if qq != "0" and qq != "":
+            u.qq = int(qq)
+        u.weixin_code = arg_dict.get("weixin_code", None)
+        u.save()
+        return []
