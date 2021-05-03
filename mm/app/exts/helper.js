@@ -42,8 +42,7 @@ define('app/exts/helper', [
 			},
 			showDialog: function (t, e) {
 				;((e = e || {}).title = e.title || ''),
-					(e.closePrevious =
-						null === e.closePrevious || e.closePrevious),
+					(e.closePrevious = null === e.closePrevious || e.closePrevious),
 					(e.mask = !0),
 					(e.view = t),
 					this.globalDialog &&
@@ -81,18 +80,6 @@ define('app/exts/helper', [
 					hasclose: !1,
 				})
 			},
-			showLegal: function (t) {
-				var e = !1
-				t && (e = t.hasclose || !1),
-					this.showDialog('app/views/common/legal', {
-						dockClass: 'block-legal',
-						width: 800,
-						height: 550,
-						hasclose: e,
-						maskClickClose: !e,
-						viewOptions: t,
-					})
-			},
 			showAlert: function (t, e) {
 				this.globalDialog = i.msgbox({
 					title: '',
@@ -102,9 +89,7 @@ define('app/exts/helper', [
 					width: 280,
 					height: 130,
 					hasclose: !1,
-					buttons: [
-						{ text: s.COMMON_CONFIRM, fn: e, dock: 'btn-red' },
-					],
+					buttons: [{ text: s.COMMON_CONFIRM, fn: e, dock: 'btn-red' }],
 				})
 			},
 			showConfirm: function (t, e, n, o) {
@@ -168,8 +153,7 @@ define('app/exts/helper', [
 				this.setItem(this.HISTORY_DOWNLOAD_KEY, n.slice(0, 100))
 			},
 			setItem: function (t, e) {
-				;(r.isPlainObject(e) || r.isArray(e)) &&
-					(e = JSON.stringify(e)),
+				;(r.isPlainObject(e) || r.isArray(e)) && (e = JSON.stringify(e)),
 					window.localStorage.setItem(t, e)
 			},
 			getItem: function (e) {
@@ -186,17 +170,14 @@ define('app/exts/helper', [
 		},
 		l = r.extend(l, {
 			formateNumber: function (t) {
-				return t
-					? t.toString().replace(/(\d)(?=(?:\d{3})+$)/g, '$1,')
-					: 0
+				return t ? t.toString().replace(/(\d)(?=(?:\d{3})+$)/g, '$1,') : 0
 			},
 			hasKey: function (t, e) {
 				for (var n in t) if (t.hasOwnProperty(n) && n == e) return !0
 				return !1
 			},
 			filter: function (t, e) {
-				for (var n = [], o = 0; o < t.length; o++)
-					e(t[o], o) && n.push(t[o])
+				for (var n = [], o = 0; o < t.length; o++) e(t[o], o) && n.push(t[o])
 				return n
 			},
 			inArray: function (t, e) {
@@ -207,11 +188,7 @@ define('app/exts/helper', [
 			},
 			indexOf: function (t, e, n) {
 				if (null === t) return -1
-				for (
-					var o = 0, i = t.length, a = n || this._compare;
-					o < i;
-					o++
-				)
+				for (var o = 0, i = t.length, a = n || this._compare; o < i; o++)
 					if (a(t[o], e)) return o
 				return -1
 			},
@@ -234,17 +211,11 @@ define('app/exts/helper', [
 		I18N_KEY: 'locale',
 		createCookie: function (t, e, n) {
 			var o = n
-				? ((o = new Date()).setTime(
-						o.getTime() + 24 * n * 60 * 60 * 1e3
-				  ),
+				? ((o = new Date()).setTime(o.getTime() + 24 * n * 60 * 60 * 1e3),
 				  '; expires=' + o.toGMTString())
 				: ''
 			document.cookie =
-				encodeURIComponent(t) +
-				'=' +
-				encodeURIComponent(e) +
-				o +
-				'; path=/'
+				encodeURIComponent(t) + '=' + encodeURIComponent(e) + o + '; path=/'
 		},
 		readCookie: function (t) {
 			for (
@@ -254,8 +225,7 @@ define('app/exts/helper', [
 				o < n.length;
 				o++
 			) {
-				for (var i = n[o]; ' ' === i.charAt(0); )
-					i = i.substring(1, i.length)
+				for (var i = n[o]; ' ' === i.charAt(0); ) i = i.substring(1, i.length)
 				if (0 === i.indexOf(e))
 					return decodeURIComponent(i.substring(e.length, i.length))
 			}
@@ -275,26 +245,25 @@ define('app/exts/helper', [
 					r('#' + t).append(n)
 			},
 			renderChangyan: function (i, a) {
-				r.getScript('//changyan.sohu.com/upload/changyan.js').done(
-					function (t, e) {
-						var n = document.createElement('div')
-						n.setAttribute('id', 'SOHUCS'),
-							n.setAttribute('sid', a.key),
-							r('#' + i).append(n),
-							window.changyan.api.config({
-								appid: 'cysXHh0HU',
-								conf: 'prod_8132a1c60a3c63e5761ac5cd65fcf60d',
-							})
-						var o = function () {
-							;(r('#MZAD_POP_PLACEHOLDER').length ||
-								r('#pop_ad').length) &&
-								(r('#MZAD_POP_PLACEHOLDER').remove(),
-								r('#pop_ad').remove()),
-								setTimeout(o, 2e3)
-						}
-						setTimeout(o, 2e3)
+				r.getScript('//changyan.sohu.com/upload/changyan.js').done(function (
+					t,
+					e
+				) {
+					var n = document.createElement('div')
+					n.setAttribute('id', 'SOHUCS'),
+						n.setAttribute('sid', a.key),
+						r('#' + i).append(n),
+						window.changyan.api.config({
+							appid: 'cysXHh0HU',
+							conf: 'prod_8132a1c60a3c63e5761ac5cd65fcf60d',
+						})
+					var o = function () {
+						;(r('#MZAD_POP_PLACEHOLDER').length || r('#pop_ad').length) &&
+							(r('#MZAD_POP_PLACEHOLDER').remove(), r('#pop_ad').remove()),
+							setTimeout(o, 2e3)
 					}
-				)
+					setTimeout(o, 2e3)
+				})
 			},
 		})),
 		(l = r.extend(l, {
@@ -306,11 +275,7 @@ define('app/exts/helper', [
 								o = t.match(n),
 								i = e.match(n)
 							if (!o || !i) return t.localeCompare(e)
-							for (
-								var a = 0, r = Math.min(o.length, i.length);
-								a < r;
-								a++
-							) {
+							for (var a = 0, r = Math.min(o.length, i.length); a < r; a++) {
 								var s = t.indexOf(o[a]),
 									l = e.indexOf(i[a]),
 									c = t.substring(0, s),
@@ -322,13 +287,10 @@ define('app/exts/helper', [
 								if (s != l || c != d) return t.localeCompare(e)
 								if (u !== f)
 									return h == g
-										? f.lastIndexOf(g + '') -
-												u.lastIndexOf(h + '')
+										? f.lastIndexOf(g + '') - u.lastIndexOf(h + '')
 										: h - g
 								if (a == r - 1)
-									return t
-										.substring(s)
-										.localeCompare(e.substring(l))
+									return t.substring(s).localeCompare(e.substring(l))
 								;(t = t.substring(s + u.length)),
 									(e = e.substring(s + u.length))
 							}
@@ -382,18 +344,9 @@ define('app/exts/helper', [
 				if (t) return l.inArray(l.SIGN_ATTR, t)
 			},
 			generateAttrs: function (t) {
-				for (
-					var e = t.attributes, n = [], o = 0, i = e.length;
-					o < i;
-					o++
-				)
+				for (var e = t.attributes, n = [], o = 0, i = e.length; o < i; o++)
 					l.inSignAttr(e[o].nodeName.toLowerCase()) &&
-						n.push(
-							e[o].nodeName.toLowerCase() +
-								'="' +
-								e[o].nodeValue +
-								'"'
-						)
+						n.push(e[o].nodeName.toLowerCase() + '="' + e[o].nodeValue + '"')
 				return n.join(';')
 			},
 		}))

@@ -15,7 +15,7 @@
       var reg = /^http:\/\/(www\.)?ICS\.com/
       var isHeadless= /HeadlessChrome/.test(window.navigator.userAgent)
       if (location.protocol === 'http:' && reg.test(domain) && !isHeadless) {
-        location.href = domain.replace(reg, 'http://www.iconfont.cn')
+        location.href = domain.replace(reg, 'http://ICS.com')
       }
     })()
   </script>
@@ -30,7 +30,7 @@
   <meta name="data-spm" content="a313x">
 </head>
 
-<body data-spm="7781069">
+<body data-spm="7781069" data-href-template="{% url 'social:begin' 'github' %}" id="body">
   <div id="root"></div>
   {% csrf_token %}
   <script src="//ICS.com:8000/mm/app/boot.js"></script>

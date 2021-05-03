@@ -1,11 +1,11 @@
 import os
 from datetime import datetime as dt
 import json
+import requests
 from ICS.models import *
 
 path = "C:/Users/HongYi/Desktop/论文/毕设"
-
-user = [10000, 10001, 10002]
+users = [10000, 10001, 10002]
 
 
 # static\out = open(os.path.join(path, 'out.txt'), mode='w')
@@ -75,7 +75,7 @@ def run():
                 new_lib.icon_libs_id = rep_id
                 new_lib.name = rep_name
                 new_lib.all_count = len(datas)
-                new_lib.created_user = user[i]
+                new_lib.created_user = users[i]
                 new_lib.slugs = rep_name
                 new_lib.likes_count = 0
                 new_lib.is_private = False
@@ -91,7 +91,7 @@ def run():
                 new_icon.slug = icon["name"]
                 show_svg = icon["show_svg"]
                 new_icon.show_svg = icon["show_svg"]
-                new_icon.created_user = user[i]
+                new_icon.created_user = users[i]
                 new_icon.svg = get_svg(show_svg)
                 new_icon.origin_file = get_o_f(show_svg)
                 new_icon.is_private = False
@@ -102,7 +102,7 @@ def run():
         else:
             for icon in datas["data"]["icons"]:
                 new_ill = data()
-                new_ill.created_user = user[j]
+                new_ill.created_user = users[j]
                 new_ill.data_id = icon["id"]
                 new_ill.name = icon["name"]
                 new_ill.height = icon["height"]
@@ -113,3 +113,34 @@ def run():
                 new_ill.save()
             j += 1
         pass
+
+
+def getAccessToken(url: str):
+    header = {"accept": "application/json"}
+    resp_dict: dict = json.loads(requests.get(url=url, headers=header).text)
+    return resp_dict.get("access_token", None)
+
+
+def getUserInfo(url: str, token: str):
+    header = {
+        "Accept": "application/vnd.github.v3+json",
+        "Authorization": "token %s" % token,
+    }
+    resp_dict: dict = json.loads(requests.get(url, headers=header).text)
+    return resp_dict
+
+
+def add_user(user_info_dict: dict):
+    print("到了")
+    new_user = user()
+    new_user.user_id = user_info_dict["id"]
+    new_user.password = user_info_dict.get("node_id")
+    new_user.token = "no_token"
+    new_user.save()
+    new_user_profile = userProfile()
+    new_user_profile.user_id = user_info_dict["id"]
+    new_user_profile.avatar = user_info_dict.get("avatar_url", None)
+    new_user_profile.email = user_info_dict.get("email", None)
+    new_user_profile.nickname = user_info_dict.get("login", "null")
+    new_user_profile.save()
+    print(new_user_profile)

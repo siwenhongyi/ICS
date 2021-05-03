@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'ICS.apps.IcsConfig',
+    'social_django',  # 新增
 ]
 
 MIDDLEWARE = [
@@ -63,6 +64,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends',  # 新增
+                'social_django.context_processors.login_redirect',  # 新增
             ],
         },
     },
@@ -117,6 +120,18 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
+
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.github.GithubOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)  # 新增
+
+
+SOCIAL_AUTH_GITHUB_KEY = 'd45f80438836477a7085'
+SOCIAL_AUTH_GITHUB_SECRET = 'f2e12d97afd1b0fd450ef802954876f51bd9e266'
+SOCIAL_AUTH_GITHUB_USE_OPENID_AS_USERNAME = True
+# 登陆成功后的回调路由
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/complete/github/'  # 登陆成功之后的路由
 
 STATIC_URL = '/mm/'
 STATICFILES_DIRS = [
