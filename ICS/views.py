@@ -1,13 +1,15 @@
 import json
 import os
 
-from django.http import HttpRequest, HttpResponse, HttpResponseRedirect, Http404
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect, Http404, FileResponse
 from django.shortcuts import render
 
 import ICS.tools as my_tools
 from ICS.models import *
 from ICS.api_search import ApiSearch
 from ICS.api_user import ApiUser
+from ICS.api_data_info import ApiDataInfo
+from ICS.api_libs_info import ApiLibsInfo
 from djangoProject.settings import SOCIAL_AUTH_GITHUB_KEY, SOCIAL_AUTH_GITHUB_SECRET
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -55,6 +57,9 @@ def pub_info(req: HttpRequest):
         res["qq"] = u.qq
         res["updated_at"] = u.updated_at.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
         res["weixin_code"] = str(u.weixin_code)
+        res["status"] = 1
+        res["role"] = 0
+        res["alipay_code"] = u.pay_code
     resp["data"]["csrf"] = "W3kShn9G-eUNG01Ep8vomSVX2P0swV-zfqus"
     resp["data"]["env"] = "prod"
     resp["data"]["iconCount"] = 12694244
@@ -70,16 +75,6 @@ def index(req: HttpRequest):
         content_type="text/html"
     )
     return resp
-
-    pass
-
-
-def search_index(req: HttpRequest):
-    return render(
-        req,
-        template_name='index.html',
-        content_type="text/html",
-    )
 
 
 def api(req: HttpRequest, **kwargs):
@@ -119,6 +114,34 @@ def api(req: HttpRequest, **kwargs):
         resp = HttpResponseRedirect('/')
         resp.delete_cookie("u")
         return resp
+    elif path.find('getUploadings.json') != -1 or path.find("getUploadingSvgs.json") != -1:
+        resp = {
+            "code": 200,
+            "data": {"icons": []}
+        }
+        return HttpResponse(json.dumps(resp), content_type="application/json")
+    elif path.find('svg/svgInfo.json') != -1:
+        resp = {"code": 200}
+        info = ApiDataInfo(req, info_type='illustration').run()
+        if info is None:
+            resp["code"] = 300
+        resp["data"] = info
+        return HttpResponse(json.dumps(resp), content_type="application/json")
+    elif path.find('icon/iconInfo.json') != -1:
+        resp = {"code": 200}
+        info = ApiDataInfo(req, info_type='icon').run()
+        if info is None:
+            resp["code"] = 300
+        resp["data"] = info
+        return HttpResponse(json.dumps(resp), content_type="application/json")
+    elif path.find('collection/detail.json') != -1:
+        resp = {"code": 200}
+        path = my_tools.get_arg(path)
+        detail = ApiLibsInfo(req=req, path=path[-1]).run()
+        if detail is None:
+            resp["code"] = 300
+        resp["data"] = detail
+        return HttpResponse(json.dumps(resp), content_type="application/json")
     else:
         raise Http404
 
@@ -139,4 +162,18 @@ def complete(req):
         my_tools.add_user(userInfoDict)
     resp = HttpResponseRedirect('/')
     resp.set_cookie("u", u_id)
+    return resp
+
+
+def cnm(req: HttpRequest):
+    callback = ""
+    with open('D:/Projects/djangoProject/mm/t/icons_default_tags.js', mode='r', encoding='utf-8') as f:
+        callback = f.read().replace('\n', '').replace(' ','')
+    resp = HttpResponse(callback, content_type="application/javascript", charset='utf-8')
+    return resp
+
+
+def cnmm(req: HttpRequest):
+    resp = HttpResponse()
+    resp.set_cookie(key='xlly_s', value=1, secure=True)
     return resp

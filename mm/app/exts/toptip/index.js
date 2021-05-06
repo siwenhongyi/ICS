@@ -14,11 +14,7 @@ define('app/exts/toptip/index', [
 		ctor: function () {
 			var e = this,
 				t = o('#' + e.id)
-			;(e.$el = t),
-				a.readCookie(s) ||
-					e.asyncLoad(function () {
-						t.slideDown(c, null, 'easeOutStrong'), r && e.addHide()
-					})
+			;(e.$el = t), a.readCookie(s)
 		},
 		hide: function () {
 			this.$el.slideUp(c, null, 'easeInStrong'), a.createCookie(s, '1', 7)

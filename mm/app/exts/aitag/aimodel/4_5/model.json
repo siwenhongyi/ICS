@@ -1,0 +1,366 @@
+{
+	"weightsManifest": [
+		{
+			"paths": [
+				"group1-shard1of3.ext_tf_gm",
+				"group1-shard2of3.ext_tf_gm",
+				"group1-shard3of3.ext_tf_gm"
+			],
+			"weights": [
+				{ "dtype": "int32", "shape": [4], "name": "Reshape/shape" },
+				{ "dtype": "float32", "shape": [5, 5, 3, 32], "name": "conv2d/kernel" },
+				{ "dtype": "float32", "shape": [512, 2], "name": "dense_1/kernel" },
+				{ "dtype": "float32", "shape": [32], "name": "conv2d/bias" },
+				{ "dtype": "int32", "shape": [], "name": "ArgMax/dimension" },
+				{
+					"dtype": "float32",
+					"shape": [5, 5, 32, 32],
+					"name": "conv2d_1/kernel"
+				},
+				{ "dtype": "float32", "shape": [32], "name": "conv2d_1/bias" },
+				{ "dtype": "float32", "shape": [2], "name": "dense_1/bias" },
+				{ "dtype": "int32", "shape": [2], "name": "Reshape_1/shape" },
+				{ "dtype": "float32", "shape": [4608, 512], "name": "dense/kernel" },
+				{ "dtype": "float32", "shape": [512], "name": "dense/bias" }
+			]
+		}
+	],
+	"modelTopology": {
+		"node": [
+			{
+				"attr": {
+					"dtype": { "type": "DT_FLOAT" },
+					"shape": {
+						"shape": {
+							"dim": [
+								{ "size": "-1" },
+								{ "size": "50" },
+								{ "size": "50" },
+								{ "size": "3" }
+							]
+						}
+					}
+				},
+				"name": "Placeholder_1",
+				"op": "Placeholder"
+			},
+			{
+				"attr": {
+					"dtype": { "type": "DT_INT32" },
+					"value": {
+						"tensor": {
+							"dtype": "DT_INT32",
+							"tensorShape": { "dim": [{ "size": "4" }] }
+						}
+					}
+				},
+				"name": "Reshape/shape",
+				"op": "Const"
+			},
+			{
+				"attr": {
+					"dtype": { "type": "DT_FLOAT" },
+					"value": {
+						"tensor": {
+							"dtype": "DT_FLOAT",
+							"tensorShape": {
+								"dim": [
+									{ "size": "5" },
+									{ "size": "5" },
+									{ "size": "3" },
+									{ "size": "32" }
+								]
+							}
+						}
+					}
+				},
+				"name": "conv2d/kernel",
+				"op": "Const"
+			},
+			{
+				"attr": {
+					"dtype": { "type": "DT_FLOAT" },
+					"value": {
+						"tensor": {
+							"dtype": "DT_FLOAT",
+							"tensorShape": { "dim": [{ "size": "512" }, { "size": "2" }] }
+						}
+					}
+				},
+				"name": "dense_1/kernel",
+				"op": "Const"
+			},
+			{
+				"attr": {
+					"dtype": { "type": "DT_FLOAT" },
+					"value": {
+						"tensor": {
+							"dtype": "DT_FLOAT",
+							"tensorShape": { "dim": [{ "size": "32" }] }
+						}
+					}
+				},
+				"name": "conv2d/bias",
+				"op": "Const"
+			},
+			{
+				"attr": {
+					"dtype": { "type": "DT_INT32" },
+					"value": { "tensor": { "dtype": "DT_INT32", "tensorShape": {} } }
+				},
+				"name": "ArgMax/dimension",
+				"op": "Const"
+			},
+			{
+				"attr": {
+					"dtype": { "type": "DT_FLOAT" },
+					"value": {
+						"tensor": {
+							"dtype": "DT_FLOAT",
+							"tensorShape": {
+								"dim": [
+									{ "size": "5" },
+									{ "size": "5" },
+									{ "size": "32" },
+									{ "size": "32" }
+								]
+							}
+						}
+					}
+				},
+				"name": "conv2d_1/kernel",
+				"op": "Const"
+			},
+			{
+				"attr": {
+					"dtype": { "type": "DT_FLOAT" },
+					"value": {
+						"tensor": {
+							"dtype": "DT_FLOAT",
+							"tensorShape": { "dim": [{ "size": "32" }] }
+						}
+					}
+				},
+				"name": "conv2d_1/bias",
+				"op": "Const"
+			},
+			{
+				"attr": {
+					"dtype": { "type": "DT_FLOAT" },
+					"value": {
+						"tensor": {
+							"dtype": "DT_FLOAT",
+							"tensorShape": { "dim": [{ "size": "2" }] }
+						}
+					}
+				},
+				"name": "dense_1/bias",
+				"op": "Const"
+			},
+			{
+				"attr": {
+					"dtype": { "type": "DT_INT32" },
+					"value": {
+						"tensor": {
+							"dtype": "DT_INT32",
+							"tensorShape": { "dim": [{ "size": "2" }] }
+						}
+					}
+				},
+				"name": "Reshape_1/shape",
+				"op": "Const"
+			},
+			{
+				"attr": {
+					"dtype": { "type": "DT_FLOAT" },
+					"value": {
+						"tensor": {
+							"dtype": "DT_FLOAT",
+							"tensorShape": { "dim": [{ "size": "4608" }, { "size": "512" }] }
+						}
+					}
+				},
+				"name": "dense/kernel",
+				"op": "Const"
+			},
+			{
+				"attr": {
+					"dtype": { "type": "DT_FLOAT" },
+					"value": {
+						"tensor": {
+							"dtype": "DT_FLOAT",
+							"tensorShape": { "dim": [{ "size": "512" }] }
+						}
+					}
+				},
+				"name": "dense/bias",
+				"op": "Const"
+			},
+			{
+				"input": ["Placeholder_1", "Reshape/shape"],
+				"attr": {
+					"T": { "type": "DT_FLOAT" },
+					"Tshape": { "type": "DT_INT32" }
+				},
+				"name": "Reshape",
+				"op": "Reshape"
+			},
+			{
+				"input": ["Reshape", "conv2d/kernel"],
+				"attr": {
+					"explicit_paddings": { "list": {} },
+					"data_format": { "s": "TkhXQw==" },
+					"use_cudnn_on_gpu": { "b": true },
+					"padding": { "s": "U0FNRQ==" },
+					"strides": { "list": { "i": ["1", "1", "1", "1"] } },
+					"T": { "type": "DT_FLOAT" },
+					"dilations": { "list": { "i": ["1", "1", "1", "1"] } }
+				},
+				"name": "conv2d/Conv2D",
+				"op": "Conv2D"
+			},
+			{
+				"input": ["conv2d/Conv2D", "conv2d/bias"],
+				"attr": {
+					"T": { "type": "DT_FLOAT" },
+					"data_format": { "s": "TkhXQw==" }
+				},
+				"name": "conv2d/BiasAdd",
+				"op": "BiasAdd"
+			},
+			{
+				"input": ["conv2d/BiasAdd"],
+				"attr": {
+					"padding": { "s": "VkFMSUQ=" },
+					"strides": { "list": { "i": ["1", "2", "2", "1"] } },
+					"ksize": { "list": { "i": ["1", "2", "2", "1"] } },
+					"T": { "type": "DT_FLOAT" },
+					"data_format": { "s": "TkhXQw==" }
+				},
+				"name": "max_pooling2d/MaxPool",
+				"op": "MaxPool"
+			},
+			{
+				"input": ["max_pooling2d/MaxPool"],
+				"attr": { "T": { "type": "DT_FLOAT" } },
+				"name": "conv2d/Relu",
+				"op": "Relu"
+			},
+			{
+				"input": ["conv2d/Relu", "conv2d_1/kernel"],
+				"attr": {
+					"explicit_paddings": { "list": {} },
+					"data_format": { "s": "TkhXQw==" },
+					"use_cudnn_on_gpu": { "b": true },
+					"padding": { "s": "U0FNRQ==" },
+					"strides": { "list": { "i": ["1", "1", "1", "1"] } },
+					"T": { "type": "DT_FLOAT" },
+					"dilations": { "list": { "i": ["1", "1", "1", "1"] } }
+				},
+				"name": "conv2d_2/Conv2D",
+				"op": "Conv2D"
+			},
+			{
+				"input": ["conv2d_2/Conv2D", "conv2d_1/bias"],
+				"attr": {
+					"T": { "type": "DT_FLOAT" },
+					"data_format": { "s": "TkhXQw==" }
+				},
+				"name": "conv2d_2/BiasAdd",
+				"op": "BiasAdd"
+			},
+			{
+				"input": ["conv2d_2/BiasAdd"],
+				"attr": {
+					"padding": { "s": "VkFMSUQ=" },
+					"strides": { "list": { "i": ["1", "2", "2", "1"] } },
+					"ksize": { "list": { "i": ["1", "2", "2", "1"] } },
+					"T": { "type": "DT_FLOAT" },
+					"data_format": { "s": "TkhXQw==" }
+				},
+				"name": "max_pooling2d_2/MaxPool",
+				"op": "MaxPool"
+			},
+			{
+				"input": ["max_pooling2d_2/MaxPool"],
+				"attr": { "T": { "type": "DT_FLOAT" } },
+				"name": "conv2d_2/Relu",
+				"op": "Relu"
+			},
+			{
+				"input": ["conv2d_2/Relu", "Reshape_1/shape"],
+				"attr": {
+					"T": { "type": "DT_FLOAT" },
+					"Tshape": { "type": "DT_INT32" }
+				},
+				"name": "Reshape_1",
+				"op": "Reshape"
+			},
+			{
+				"input": ["Reshape_1", "dense/kernel"],
+				"attr": {
+					"transpose_b": { "b": false },
+					"transpose_a": { "b": false },
+					"T": { "type": "DT_FLOAT" }
+				},
+				"name": "dense/MatMul",
+				"op": "MatMul"
+			},
+			{
+				"input": ["dense/MatMul", "dense/bias"],
+				"attr": {
+					"T": { "type": "DT_FLOAT" },
+					"data_format": { "s": "TkhXQw==" }
+				},
+				"name": "dense/BiasAdd",
+				"op": "BiasAdd"
+			},
+			{
+				"input": ["dense/BiasAdd"],
+				"attr": { "T": { "type": "DT_FLOAT" } },
+				"name": "dense/Relu",
+				"op": "Relu"
+			},
+			{
+				"input": ["dense/Relu", "dense_1/kernel"],
+				"attr": {
+					"transpose_b": { "b": false },
+					"transpose_a": { "b": false },
+					"T": { "type": "DT_FLOAT" }
+				},
+				"name": "dense_2/MatMul",
+				"op": "MatMul"
+			},
+			{
+				"input": ["dense_2/MatMul", "dense_1/bias"],
+				"attr": {
+					"T": { "type": "DT_FLOAT" },
+					"data_format": { "s": "TkhXQw==" }
+				},
+				"name": "dense_2/BiasAdd",
+				"op": "BiasAdd"
+			},
+			{
+				"input": ["dense_2/BiasAdd", "ArgMax/dimension"],
+				"attr": {
+					"output_type": { "type": "DT_INT64" },
+					"T": { "type": "DT_FLOAT" },
+					"Tidx": { "type": "DT_INT32" }
+				},
+				"name": "ArgMax",
+				"op": "ArgMax"
+			},
+			{
+				"input": ["dense_2/BiasAdd"],
+				"attr": { "T": { "type": "DT_FLOAT" } },
+				"name": "softmax_tensor",
+				"op": "Softmax"
+			}
+		],
+		"library": {},
+		"versions": { "producer": 94 }
+	},
+	"generatedBy": "1.4.0",
+	"convertedBy": "TensorFlow.js Converter v1.1.2",
+	"format": "graph-model"
+}

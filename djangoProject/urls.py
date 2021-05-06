@@ -26,11 +26,16 @@ urlpatterns = [
     path('', index),
     path('home/index', index),
     path('manage/index', index),
-    path('user/center',index),
+    path('user/center', index),
+    path('user/detail', index),
+    path('icons/upload', index),
+    path('collections/detail', index),
+    path('t/icons_default_tags', cnm),
+    path('fsp.1.1', cnmm),
     path('complete/github/', complete),
     path('', include('social_django.urls', namespace='social')),
     path('search/index', index),
     url(r'^api/(?P<path>.*)$', api),
-    url(r'^mm/(?P<path>.*)$', serve, {"document_root": settings.STATIC_ROOT}),
+    url(r'^mm/(?P<path>.*)$', serve, {"document_root": settings.STATIC_ROOT, "content_type": "application/javascript"}),
 
 ]

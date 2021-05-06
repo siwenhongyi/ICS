@@ -29,7 +29,7 @@ class ApiSearch:
             t = dict()
             flag = False
             if icon.created_at is None:
-                flag=True
+                flag = True
                 icon.created_at = datetime.datetime.now()
             if icon.updated_at is None:
                 flag = True
@@ -38,7 +38,7 @@ class ApiSearch:
             t["updated_at"] = icon.updated_at.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
             t["height"] = icon.height
             t["width"] = icon.width
-            t["category_id"] = 1
+            t["category_id"] = icon.category_id
             t["status"] = 1
             t["font_class"] = icon.font_class
             t["id"] = icon.data_id
@@ -58,16 +58,18 @@ class ApiSearch:
 
     def get_illustration(self):
         res = list()
-        ills = data.objects.filter(data_type='illustration').filter(Q(slug__icontains=self.key) | Q(name__icontains=self.key))
+        ills = data.objects.filter(data_type='illustration').filter(
+            Q(slug__icontains=self.key) | Q(name__icontains=self.key))
         for ill in ills:
             t = dict()
             flag = False
             if ill.created_at is None:
                 ill.created_at = datetime.datetime.now()
                 flag = True
+            t["id"] = ill.data_id
             t["created_at"] = ill.created_at.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
             t["ext"] = "svg"
-            t["file"] = str(ill.data_file)
+            t["file"] = ill.data_file
             t["height"] = ill.height
             t["width"] = ill.width
             t["origin_file"] = ill.origin_file
@@ -82,10 +84,11 @@ class ApiSearch:
             if flag:
                 ill.save()
         return res
+
     pass
 
     def get_user(self):
-        users = userProfile.objects.filter(nickname__icontains=int(self.key))
+        users = userProfile.objects.filter(nickname__icontains=self.key)
         res = []
         for u in users:
             item = dict()

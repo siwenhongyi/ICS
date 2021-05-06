@@ -2,10 +2,17 @@ define('app/models/manager', ['app/models/service'], function (e, o, n) {
 	e = e('app/models/service')
 	e.add([
 		{
-			name: 'list',
-			url: '/api/home/list.json',
+			name: 'default_tags',
+			url: '/t/icons_default_tags',
+			method: 'GET',
 		},
 	]),
+		e.add([
+			{
+				name: 'list',
+				url: '/api/home/list.json',
+			},
+		]),
 		e.add([
 			{
 				name: 'collection_list',

@@ -2,16 +2,48 @@ import os
 from datetime import datetime as dt
 import json
 import requests
+import validators
 from ICS.models import *
 
 path = "C:/Users/HongYi/Desktop/论文/毕设"
 users = [10000, 10001, 10002]
+default_tags = {
+    "tags": [{"name": "填充", "ename": "filling"}, {"name": "线性", "ename": "linear"}, {"name": "扁平", "ename": "flat"},
+             {"name": "手绘", "ename": "freehand"}, {"name": "单色", "ename": "solid color"},
+             {"name": "多色", "ename": "multicolor"}, {"name": "简约", "ename": "simple"},
+             {"name": "精美", "ename": "delicate"}, {"name": "可爱", "ename": "cute"}, {"name": "商务", "ename": "businese"},
+             {"name": "圆润", "ename": "round"}, {"name": "方正", "ename": "square"}]
+}
+
 
 
 # static\out = open(os.path.join(path, 'out.txt'), mode='w')
 
 def get_arg(arg_str: str) -> list:
     return arg_str.split('/')
+
+
+def get_default_tag() -> str:
+    print(type(default_tags))
+    return default_tags
+
+
+
+
+
+def check_qq(qq: str) -> bool:
+    if len(qq) < 5 or len(qq) > 10:
+        return False
+    for _ in qq:
+        if _.isdigit():
+            continue
+        else:
+            return False
+    return True
+
+
+def check_email(email: str) -> bool:
+    return validators.email(email)
 
 
 def get_svg(show_svg: str) -> str:

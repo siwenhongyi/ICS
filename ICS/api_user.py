@@ -1,6 +1,7 @@
 from ICS.models import *
 from django.db.models import Q
 from django.http import HttpRequest
+import ICS.tools as my_tool
 import datetime
 
 
@@ -27,6 +28,19 @@ class ApiUser:
             return self.get_my_center()
         elif enum == 'update.json':
             return self.update()
+        elif enum == 'collections.json':
+            return {"collections": []}
+        elif enum == 'likes.json':
+            return {"icons": []}
+        elif enum == 'mycollections_simple.json':
+            return {"collections": []}
+        elif enum == 'myprojects.json':
+            return {
+                "corpProjects": [],
+                "delProjects": [],
+                "ownProjects": [],
+                "selectedId": None,
+            }
         else:
             return None
 
@@ -34,7 +48,7 @@ class ApiUser:
         """
         get all data by data_type
         :param dt: data_type
-        :return: list of res
+        :return: get all need data list of res
         """
         arg_dict = self.req.GET
         u_id = int(self.req.COOKIES.get("u", "0"))
@@ -55,7 +69,7 @@ class ApiUser:
     def get_my_icons(self):
         """
         get all_my icons
-        :return:
+        :return: get all need data
         """
         icons = self.get_icons_or_ills(dt='icon')
         limit = int(self.req.GET.get("limit", "15"))
@@ -83,7 +97,7 @@ class ApiUser:
     def get_my_illustration(self):
         """
         get all my ills
-        :return:
+        :return: get all need data
         """
         ills = self.get_icons_or_ills(dt='illustration')
         limit = int(self.req.GET.get("limit", "15"))
@@ -109,7 +123,7 @@ class ApiUser:
     def get_my_libs(self):
         """
         get all my libs  and data of this libs
-        :return:
+        :return: get all need data
         """
         u_id = int(self.req.COOKIES.get("u", "0"))
         libs = iconLibs.objects.filter(created_user=u_id)
@@ -119,8 +133,8 @@ class ApiUser:
             one_lib = dict()
             one_lib["create_user_id"] = lib.created_user
             one_lib["id"] = lib.icon_libs_id
-            one_lib["created_at"] = lib.created_at.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
-            one_lib["updated_at"] = lib.updated_at.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
+            one_lib["created_at"] = lib.created_at.strftime("%Y-%m-%dT%H:%M:%S%z")
+            one_lib["updated_at"] = lib.updated_at.strftime("%Y-%m-%dT%H:%M:%S%z")
             one_lib["has_secret"] = lib.has_secret
             one_lib["name"] = lib.name
             one_lib["slug"] = lib.slugs
@@ -149,7 +163,7 @@ class ApiUser:
     def get_my_like_icons(self):
         """
         get all my like icons
-        :return:
+        :return: get all need data
         """
         u_id = int(self.req.COOKIES.get("u", "0"))
         all_favorites = favorites.objects.filter(user_id=u_id)
@@ -188,10 +202,10 @@ class ApiUser:
     def get_my_like_libs(self):
         """
         get all my like libs
-        :return:
+        :return: get all need data
         """
         u_id = int(self.req.COOKIES.get("u", "0"))
-        all_likes = likes.objects.filter(user_id=u_id)
+        all_likes = likes.objects.filter(user_id=u_id, libs_id__libs_type=self.req.GET.get("type", "icon"))
         res = dict()
         m = list()
         for like in all_likes:
@@ -241,7 +255,7 @@ class ApiUser:
         u_id = int(self.req.GET.get("uid", "0"))
         u = userProfile.objects.filter(user_id=u_id)
         if len(u) != 1:
-            return None
+            return {}
         u: userProfile = u.first()
         res = {
             "alipay_code": "",
@@ -250,10 +264,11 @@ class ApiUser:
             "id": u.user_id,
             "isXiaoer": False,
             "nickname": u.nickname,
-            "qq": u.qq,
-            "show_email": u.email,
             "weixin_code": str(u.weixin_code),
         }
+        if self.req.COOKIES.get('u') == str(u_id):
+            res["qq"] =u.qq,
+            res["show_email"] = u.show_email
         return res
 
     def update(self):
@@ -264,11 +279,13 @@ class ApiUser:
         u: userProfile = u.first()
         arg_dict = self.req.POST
         u.avatar = arg_dict.get("avatar", "")
-        u.bio = arg_dict.get("bio", "")
-        u.email = arg_dict.get("show_email", "")
+        u.bio = arg_dict.get("bio", None)
+        email = arg_dict.get("show_email", "")
+        if my_tool.check_email(email):
+            u.email = email
         u.nickname = arg_dict.get("nickname", "")
-        qq = arg_dict.get("qq", "0")
-        if qq != "0" and qq != "":
+        qq: str = arg_dict.get("qq", "0")
+        if my_tool.check_qq(qq):
             u.qq = int(qq)
         u.weixin_code = arg_dict.get("weixin_code", None)
         u.save()

@@ -27,7 +27,8 @@ class userProfile(models.Model):
     email = models.EmailField(blank=True, null=True)
     nickname = models.CharField(max_length=200)
     qq = models.CharField(max_length=10, blank=True, null=True)
-    weixin_code = models.ImageField(upload_to='userWeixinCode', default='default/userWeixinCode_default.png')
+    weixin_code = models.CharField(max_length=500, blank=True, null=True)
+    pay_code = models.CharField(max_length=500, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     last_login_at = models.DateTimeField(auto_now=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -50,6 +51,7 @@ class iconLibs(models.Model):
     is_private = models.BooleanField(default=False)
     has_secret = models.IntegerField(default=0)
     password = models.CharField(max_length=50, blank=True, null=True)
+    libs_type = models.CharField(max_length=100, default="icon")
 
     def __str__(self):
         return self.name
@@ -63,7 +65,7 @@ class data(models.Model):
     data_type = models.CharField(max_length=500, default='icon')
 
     # for illustration
-    data_file = models.ImageField(upload_to='illustration', blank=True, null=True)
+    data_file = models.CharField(max_length=500, blank=True, null=True)
     # they are svg 、 svg with style 、 svg's path and i dont know(small path?)
     origin_file = models.TextField(blank=True, null=True)
     svg = models.TextField(blank=True, null=True)

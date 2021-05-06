@@ -219,7 +219,7 @@ define('app/i18n/index', ['jquery'], function (_, E, A) {
 			MANAGE_PROJECTS_NO_CODE:
 				'\u6682\u65e0\u4ee3\u7801\uff0c\u70b9\u6b64\u751f\u6210',
 			MANAGE_PROJECTS_NEW_CODE:
-				'\u4e0b\u65b9\u65b0 icon \u6765\u88ad\uff0c\u70b9\u51fb\u66f4\u65b0\u4ee3\u7801\uff0c\u66f4\u65b0\u540e\u5c06\u652f\u6301 WOFF2 \u683c\u5f0f',
+				'\u70b9\u51fb\u66f4\u65b0\u4ee3\u7801\uff0c\u9ed8\u8ba4\u4e0d\u518d\u751f\u6210 .eot \u548c .svg \u5b57\u4f53\uff0c\u8bf7\u5230\u300c\u7f16\u8f91\u9879\u76ee\u300d\u4e2d\u914d\u7f6e\u3002Base64 \u4e0d\u518d\u652f\u6301\u3002',
 			MANAGE_PROJECTS_NEW_WOFF2:
 				'\u73b0\u5df2\u652f\u6301 WOFF2 \u683c\u5f0f\uff0c\u70b9\u6b64\u66f4\u65b0',
 			MANAGE_PROJECTS_BATCH_CANCEL: '\u53d6\u6d88\u6279\u91cf\u9009\u62e9',
@@ -450,6 +450,8 @@ define('app/i18n/index', ['jquery'], function (_, E, A) {
 			CODE_WEB: 'web\u7aef\u4f7f\u7528',
 			CODE_ANDROID: 'Android\u4f7f\u7528',
 			CODE_IOS: 'IOS\u4f7f\u7528',
+			SEARCH_TIP:
+				'<a target="_blank" href="//mo.m.taobao.com/page_201703011647531?spm=a1zb6.8232479.0.0.tNmeXM" style="color:#ffffff;">\u963f\u91cc\u5988\u5988UED\u9664\u4e86iconfont\uff0c\u6211\u4eec\u8fd8\u641e\u4e86\u8fd9\u4e2a\u9ed1\u79d1\u6280...</a>',
 			MONEY_LOVE:
 				'\u5404\u4f4d\u770b\u5b98\uff0c\u5982\u679c\u4f60\u89c9\u5f97\u6211\u753b\u7684\u4e0d\u9519\uff0c\u8bf7\u9f13\u52b1\u9f13\u52b1\u5427\uff5e\uff5e',
 			DRAW_DRAW: '\u7ed8\u5236\u89c4\u5219',
@@ -718,7 +720,7 @@ define('app/i18n/index', ['jquery'], function (_, E, A) {
 				MANAGE_PROJECTS_NO_SYMBOL: 'Click to generating Symbol',
 				MANAGE_PROJECTS_NO_CODE: 'Click to generating Code',
 				MANAGE_PROJECTS_NEW_CODE:
-					'Updating the Online Link, Update will support WOFF2 format',
+					'Click to update the code. By default, .eot and .svg fonts are no longer generated. Please go to "Edit Project" to configure. The Base64 is no longer supported.',
 				MANAGE_PROJECTS_NEW_WOFF2:
 					'WOFF2 format is now supported, click here to update',
 				MANAGE_PROJECTS_BATCH_CANCEL: 'Cancel the Batch',

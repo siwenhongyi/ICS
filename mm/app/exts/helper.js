@@ -80,6 +80,18 @@ define('app/exts/helper', [
 					hasclose: !1,
 				})
 			},
+			showLegal: function (t) {
+				var e = !1
+				t && (e = t.hasclose || !1),
+					this.showDialog('app/views/common/legal', {
+						dockClass: 'block-legal',
+						width: 800,
+						height: 550,
+						hasclose: e,
+						maskClickClose: !e,
+						viewOptions: t,
+					})
+			},
 			showAlert: function (t, e) {
 				this.globalDialog = i.msgbox({
 					title: '',
@@ -105,16 +117,8 @@ define('app/exts/helper', [
 							hasclose: !1,
 							maskClickClose: !0,
 							buttons: [
-								{
-									text: s.COMMON_CONFIRM,
-									dock: 'btn-red mr20',
-									fn: e,
-								},
-								{
-									text: s.COMMON_CANCEL,
-									dock: 'btn-grayc',
-									fn: n,
-								},
+								{ text: s.COMMON_CONFIRM, dock: 'btn-red mr20', fn: e },
+								{ text: s.COMMON_CANCEL, dock: 'btn-grayc', fn: n },
 							],
 						},
 						o || {}
