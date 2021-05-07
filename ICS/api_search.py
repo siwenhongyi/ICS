@@ -1,7 +1,6 @@
 from ICS.models import *
 from django.db.models import Q
 import datetime
-from ICS.tools import run
 
 
 class ApiSearch:
@@ -22,7 +21,7 @@ class ApiSearch:
 
     def get_icon(self):
         res = list()
-        icons = data.objects.filter(data_type='icon').filter(Q(slug__icontains=self.key) |
+        icons = data.objects.filter(data_type='icon').filter(category_id=1).filter(Q(slug__icontains=self.key) |
                                                              Q(name__icontains=self.key) |
                                                              Q(font_class__icontains=self.key))
         for icon in icons:
@@ -58,7 +57,7 @@ class ApiSearch:
 
     def get_illustration(self):
         res = list()
-        ills = data.objects.filter(data_type='illustration').filter(
+        ills = data.objects.filter(data_type='illustration').filter(category_id=1).filter(
             Q(slug__icontains=self.key) | Q(name__icontains=self.key))
         for ill in ills:
             t = dict()

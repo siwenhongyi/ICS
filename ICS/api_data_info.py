@@ -2,16 +2,19 @@ from django.http import HttpRequest
 from ICS.models import *
 from datetime import datetime
 
+
 class ApiDataInfo:
     def __init__(self, req: HttpRequest, info_type: str = 'icon'):
         self.req = req
         self.info_type = info_type
 
     def run(self) -> dict:
-        if self.info_type == 'icon':
+        if self.info_type == 'iconInfo.json':
             return self.get_icon_info()
-        elif self.info_type == 'illustration':
+        elif self.info_type == 'svgInfo.json':
             return self.get_ill_info()
+        elif self.info_type == 'deleteIcon.json':
+            return self.delete_icon()
         else:
             return None
 
@@ -86,3 +89,12 @@ class ApiDataInfo:
     def get_ill_info(self) -> dict:
         res = self.get_icon_info()
         return res
+
+    def delete_icon(self) -> bool:
+        did: str = self.req.POST.get('ids', "0")
+        if not did.isdigit() or did == "0":
+            return False
+        did = int(did)
+        d = data.objects.filter(data_id=did)
+        d.delete()
+        return True

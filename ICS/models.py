@@ -71,7 +71,8 @@ class data(models.Model):
     svg = models.TextField(blank=True, null=True)
     show_svg = models.TextField(blank=True, null=True)
     prototype_svg = models.TextField(blank=True, null=True)
-
+    path_attributes = models.TextField(blank=True, null=True)
+    # 表示上传了还是完成了 1 2
     category_id = models.IntegerField(blank=True, null=True)
     created_user = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
@@ -83,6 +84,7 @@ class data(models.Model):
     updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
     libs_belongs_to = models.ForeignKey(to=iconLibs, to_field='icon_libs_id', on_delete=models.CASCADE, blank=True,
                                         null=True)
+    aiTagInfo = models.CharField(max_length=500, blank=True, null=True)
 
     def __str__(self):
         return self.name

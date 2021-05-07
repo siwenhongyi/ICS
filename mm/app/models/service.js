@@ -17,7 +17,16 @@ define('app/models/service', ['magix', 'jquery', 'app/exts/helper'], function(
                 i = [],
                 n = !1 !== n,
                 e = c.config().ctoken
-            if ((g.extend(t, { t: +new Date(), ctoken: e }), 'object' == typeof t)) {
+            if (
+                (g.extend(t, {
+                        t: +new Date(),
+                        ctoken: e,
+                        csrfmiddlewaretoken: document.getElementsByName(
+                            'csrfmiddlewaretoken'
+                        )[0].value,
+                    }),
+                    'object' == typeof t)
+            ) {
                 for (var d in t)
                     t.hasOwnProperty(d) &&
                     ('object' == typeof t[d] ?

@@ -57,7 +57,7 @@ class ApiUser:
         icon_start = (page - 1) * limit
         icon_end = page * limit
         icon_type = arg_dict.get("type", "all")
-        icons = data.objects.filter(created_user=u_id).filter(data_type=dt)
+        icons = data.objects.filter(created_user=u_id).filter(data_type=dt).exclude(category_id=0)
         if icon_type == 'private':
             icons = icons.filter(is_private=True)
         elif icon_type == 'public':
@@ -76,7 +76,7 @@ class ApiUser:
         res = {
             "count": len(icons),
             "limit": limit,
-            "page": len(icons) / limit + 1,
+            "page": len(icons) // limit + 1,
         }
         m = list()
         for icon in icons:
@@ -104,7 +104,7 @@ class ApiUser:
         res = {
             "count": len(ills),
             "limit": limit,
-            "page": len(ills) / limit + 1,
+            "page": len(ills) // limit + 1,
         }
         m = list()
         for ill in ills:

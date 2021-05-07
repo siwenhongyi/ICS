@@ -1,9 +1,10 @@
 import json
 import os
+from typing import Dict, List
 
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect, Http404, FileResponse
 from django.shortcuts import render
-
+from django.core.files.uploadedfile import InMemoryUploadedFile
 import ICS.tools as my_tools
 from ICS.models import *
 from ICS.api_search import ApiSearch
@@ -78,22 +79,19 @@ def index(req: HttpRequest):
 
 
 def api(req: HttpRequest, **kwargs):
-    path = kwargs['path']
+    path = my_tools.get_arg(kwargs['path'])
     print(path)
-    if path.find('pubinfo') != -1:
+    resp = {"code": 200, }
+    if path[0] == 'pubinfo.json':
         return pub_info(req)
-    elif path.find('indexConfig') != -1:
+    elif path[-1] == 'indexConfig.json':
         return index_config(req)
-    elif path.find('search') != -1:
+    elif path[-1] == 'search.json':
         m = {
             "icon": "icons",
             "illustration": "icons",
             "user": "users",
         }
-        resp = {
-            "code": 200,
-        }
-        path = path.split('/')
         icons = ApiSearch(key=req.POST.get("q"), mode=path[0]).get_res()
         icons_count = len(icons)
         resp["data"] = {
@@ -101,47 +99,119 @@ def api(req: HttpRequest, **kwargs):
             m[path[0]]: icons,
         }
         return HttpResponse(json.dumps(resp), content_type="application/json")
-    elif path.find('user') != -1:
-        resp = {"code": 200}
+    elif path[0] == 'user':
 
-        client = ApiUser(request=req, path=my_tools.get_arg(path)[-1])
+        client = ApiUser(request=req, path=path[-1])
         m = client.run()
         if m is None:
             resp["code"] = 300
         resp["data"] = m
         return HttpResponse(json.dumps(resp), content_type="application/json")
-    elif path.find('logout') != -1:
+    elif path[0] == 'logout':
         resp = HttpResponseRedirect('/')
         resp.delete_cookie("u")
         return resp
-    elif path.find('getUploadings.json') != -1 or path.find("getUploadingSvgs.json") != -1:
-        resp = {
-            "code": 200,
-            "data": {"icons": []}
-        }
+    elif path[0] == 'getUploadings.json' or path[0] == "getUploadingSvgs.json":
+        uid = int(req.COOKIES.get('u', "0"))
+        icons = data.objects.filter(created_user=uid).filter(category_id=0)
+        m = list()
+        for icon in icons:
+            res = dict()
+            aitag: dict = eval(icon.aiTagInfo)
+            res["id"] = aitag["id"] = aitag["icon_id"] = icon.data_id
+            res["aiTagInfo"] = aitag
+            res["category_id"] = 1
+            res["created_at"] = icon.created_at.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
+            res["updated_at"] = icon.updated_at.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
+            res['fills'] = True
+            res["font_class"] = res["name"] = icon.name
+            res["height"] = icon.height
+            res["width"] = icon.width
+            res["is_private"] = icon.is_private
+            res["origin_file"] = icon.origin_file
+            res["path_attributes"] = icon.path_attributes
+            res["prototype_svg"] = icon.prototype_svg
+            res["show_svg"] = icon.show_svg
+            res["svg"] = icon.svg
+            res["user_id"] = icon.created_user
+            res["slug"] = icon.slug
+            res["status"] = icon.category_id
+            res["repositorie"] = icon.libs_belongs_to
+            m.append(res)
+        resp["data"] = {"icons": m}
         return HttpResponse(json.dumps(resp), content_type="application/json")
-    elif path.find('svg/svgInfo.json') != -1:
-        resp = {"code": 200}
-        info = ApiDataInfo(req, info_type='illustration').run()
+    elif path[0] == 'svg' or path[0] == 'icon':
+        info = ApiDataInfo(req, info_type=path[-1]).run()
         if info is None:
             resp["code"] = 300
         resp["data"] = info
         return HttpResponse(json.dumps(resp), content_type="application/json")
-    elif path.find('icon/iconInfo.json') != -1:
-        resp = {"code": 200}
-        info = ApiDataInfo(req, info_type='icon').run()
-        if info is None:
-            resp["code"] = 300
-        resp["data"] = info
-        return HttpResponse(json.dumps(resp), content_type="application/json")
-    elif path.find('collection/detail.json') != -1:
-        resp = {"code": 200}
-        path = my_tools.get_arg(path)
+    elif path[0] == 'collection':
         detail = ApiLibsInfo(req=req, path=path[-1]).run()
         if detail is None:
             resp["code"] = 300
         resp["data"] = detail
         return HttpResponse(json.dumps(resp), content_type="application/json")
+    elif path[0] == 'uploadIcons.json':
+        f: InMemoryUploadedFile = req.FILES.get('icons[]', None)
+        if f is None:
+            resp["code"] = 300
+        res = dict()
+        svgs = my_tools.UploadFileGetSvg().run(str(f.read(), encoding='utf-8'))
+        icon = data()
+        res["slug"] = res["name"] = icon.name = icon.slug = f.name[:f.name.find(".svg")]
+        res["show_svg"] = icon.show_svg = svgs.get("show_svg", "")
+        icon.svg = svgs.get("svg", "")
+        icon.path_attributes = svgs.get("path_attributes", "")
+        icon.prototype_svg = svgs.get("prototype_svg", "")
+        icon.origin_file = svgs.get("origin_file", "")
+        icon.category_id = 0
+        icon.created_user = int(req.COOKIES.get("u", "0"))
+        icon.data_type = 'icon'
+        icon.save()
+        res["id"] = icon.data_id
+        resp["data"] = res
+        return HttpResponse(json.dumps(resp), content_type="application/json")
+    elif path[0] == 'updateIconAiTag.json':
+        did = int(req.POST.get('id', "0"))
+        if did == 1:
+            resp["data"] = {"success": False}
+            return HttpResponse(json.dumps(resp), content_type="application/json")
+        # did: int = did[0]
+        aitag = req.POST.get("aiTagInfo", None)
+        d: data = data.objects.filter(data_id=did).first()
+        d.aiTagInfo = aitag
+        d.save()
+        dt: dict = eval(req.POST.get('aiTagInfo'))
+        res = {"aiTagInfo": dt, "success": True, "id": did}
+        resp["data"] = res
+        return HttpResponse(json.dumps(resp), content_type="application/json")
+    elif path[0] == 'deleteUploadingIcon.json':
+        did = int(req.POST.get('id'))
+        d = data.objects.filter(data_id=did)
+        if len(d) != 1:
+            resp["code"] = 300
+            resp["data"] = False
+        else:
+            d = d.first()
+            d.delete()
+            resp["data"] = True
+        return HttpResponse(json.dumps(resp), content_type="application/json")
+    elif path[0] == 'updateUploadIcons.json':
+        icons: List[Dict] = eval(req.POST.get('updateIcons', "[]").replace('true', 'True'))
+        if len(icons) < 1:
+            resp["code"] = 300
+        else:
+            for icon in icons:
+                did = icon["id"]
+                d = data.objects.filter(data_id=did)
+                if len(d) != 1:
+                    continue
+                d: data = d.first()
+                d.category_id = 1
+                d.save()
+        return HttpResponse(json.dumps(resp), content_type="application/json")
+
     else:
         raise Http404
 
@@ -168,7 +238,7 @@ def complete(req):
 def cnm(req: HttpRequest):
     callback = ""
     with open('D:/Projects/djangoProject/mm/t/icons_default_tags.js', mode='r', encoding='utf-8') as f:
-        callback = f.read().replace('\n', '').replace(' ','')
+        callback = f.read().replace('\n', '').replace(' ', '')
     resp = HttpResponse(callback, content_type="application/javascript", charset='utf-8')
     return resp
 

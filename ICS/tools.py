@@ -1,34 +1,22 @@
 import os
 from datetime import datetime as dt
 import json
+from typing import Dict
+
 import requests
+from bs4 import BeautifulSoup
 import validators
 from ICS.models import *
 
 path = "C:/Users/HongYi/Desktop/论文/毕设"
 users = [10000, 10001, 10002]
-default_tags = {
-    "tags": [{"name": "填充", "ename": "filling"}, {"name": "线性", "ename": "linear"}, {"name": "扁平", "ename": "flat"},
-             {"name": "手绘", "ename": "freehand"}, {"name": "单色", "ename": "solid color"},
-             {"name": "多色", "ename": "multicolor"}, {"name": "简约", "ename": "simple"},
-             {"name": "精美", "ename": "delicate"}, {"name": "可爱", "ename": "cute"}, {"name": "商务", "ename": "businese"},
-             {"name": "圆润", "ename": "round"}, {"name": "方正", "ename": "square"}]
-}
-
+style = 'style="width: 1em;height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;"'
 
 
 # static\out = open(os.path.join(path, 'out.txt'), mode='w')
 
 def get_arg(arg_str: str) -> list:
     return arg_str.split('/')
-
-
-def get_default_tag() -> str:
-    print(type(default_tags))
-    return default_tags
-
-
-
 
 
 def check_qq(qq: str) -> bool:
@@ -46,108 +34,96 @@ def check_email(email: str) -> bool:
     return validators.email(email)
 
 
-def get_svg(show_svg: str) -> str:
-    show_svg = show_svg.replace(" ", "-")
-    res = []
-    for i in show_svg:
-        res.append(i)
-    show_svg = res
-    svg = []
-    while 'M' in show_svg:
-        i = show_svg.index('M')
-        a = 1
-        while i < len(show_svg) and show_svg[i] not in ['z', 'Z']:
-            svg.append(show_svg[i])
-            if a == 1 and show_svg[i] == "-":
-                i += 1
-                x = ""
-                while show_svg[i].isdigit() or show_svg[i] == '.':
-                    x += show_svg[i]
-                    i += 1
-                x = float(x)
-                x = max(896, float('%.1f' % x)) - min(896, float('%.1f' % x))
-                x = str(float('%.1f' % x))
-                if x[-1] == '0':
-                    x = x[:-2]
-                for _ in x:
-                    svg.append(_)
+class UploadFileGetSvg:
+    def __init__(self):
+        self.origin_file = ''
+        return
+
+    def run(self, temp_svg: str) -> Dict[str, str]:
+        index = temp_svg.find('<svg')
+        temp_svg = temp_svg[index:]
+        show_svg = ""
+        flag = True
+        index = temp_svg.find('>')
+        for i in range(len(temp_svg)):
+            show_svg += temp_svg[i]
+            if flag and temp_svg[i] == 'g':
+                flag = False
+                show_svg += ' '
+                for _ in style:
+                    show_svg += _
+            if i == index:
+                break
+        self.origin_file = temp_svg
+        soup = BeautifulSoup(self.origin_file, 'html.parser')
+        obj_svg = soup.find('svg')
+        prototype_svg = ""
+        path_attributes = ""
+        for tag in obj_svg.children:
+            if tag.name != 'path':
+                continue
+            atts: dict = tag.attrs
+            d = atts.get('d', None)
+            fills = atts.get('fill', None)
+            if tag.name == 'path':
+                show_svg += '<path d="'
+                show_svg += atts.get('d')
+                show_svg += '" '
+                if atts.get('fill', False):
+                    show_svg += 'fill="'
+                    show_svg += atts.get('fill')
+                    show_svg += '" '
+                show_svg += '></path>'
+            if not d:
+                prototype_svg += d
+                prototype_svg += '|'
+            if not fills:
+                path_attributes += fills
+                path_attributes += '|'
+        show_svg += '</svg>'
+        svg = self.get_svg(show_svg)
+        return {
+            "svg": svg,
+            "origin_file": self.origin_file,
+            "show_svg": show_svg,
+            "path_attributes": path_attributes,
+            "prototype_svg": prototype_svg
+        }
+
+    def get_svg(self, show_svg: str) -> str:
+        show_svg = show_svg.replace(" ", "-")
+        res = []
+        for i in show_svg:
+            res.append(i)
+        show_svg = res
+        svg = []
+        while 'M' in show_svg:
+            i = show_svg.index('M')
+            a = 1
+            while i < len(show_svg) and show_svg[i] not in ['z', 'Z']:
                 svg.append(show_svg[i])
-                a = 0
-            i += 1
-        if i >= len(show_svg):
-            break
-        svg.append(show_svg[i])
-        show_svg = show_svg[i:]
-    svg = "".join(svg)
-    return svg
-
-
-def get_o_f(show_svg: str) -> str:
-    return show_svg
-
-
-def run():
-    files = os.listdir(path)
-    i = 0
-    j = 0
-    for file in files:
-        if file.find('txt') == -1:
-            continue
-        s = ""
-        with open(file=os.path.join(path, file), mode='r', encoding='utf-8') as f:
-            for line in f.readlines():
-                s += line
-        datas: dict = json.loads(s)
-        if file[0] == 'i':
-            rep_name = file[1:file.find('.')]
-            datas = datas["data"]["icons"]
-            rep_id = datas[0]["repositorie_id"]
-            results = iconLibs.objects.filter(icon_libs_id=rep_id)
-            print(results)
-            if len(results) == 0:
-                print("new libs")
-                new_lib = iconLibs()
-                new_lib.icon_libs_id = rep_id
-                new_lib.name = rep_name
-                new_lib.all_count = len(datas)
-                new_lib.created_user = users[i]
-                new_lib.slugs = rep_name
-                new_lib.likes_count = 0
-                new_lib.is_private = False
-                new_lib.save()
-                print(len(iconLibs.objects.all()))
-            for icon in datas:
-                new_icon = data()
-                new_icon.height = icon["height"]
-                new_icon.width = icon["width"]
-                new_icon.data_id = icon["id"]
-                new_icon.name = icon["name"]
-                new_icon.font_class = icon["name"]
-                new_icon.slug = icon["name"]
-                show_svg = icon["show_svg"]
-                new_icon.show_svg = icon["show_svg"]
-                new_icon.created_user = users[i]
-                new_icon.svg = get_svg(show_svg)
-                new_icon.origin_file = get_o_f(show_svg)
-                new_icon.is_private = False
-                new_icon.libs_belongs_to = iconLibs.objects.filter(icon_libs_id=rep_id).first()
-                new_icon.save()
-            i += 1
-
-        else:
-            for icon in datas["data"]["icons"]:
-                new_ill = data()
-                new_ill.created_user = users[j]
-                new_ill.data_id = icon["id"]
-                new_ill.name = icon["name"]
-                new_ill.height = icon["height"]
-                new_ill.width = icon["width"]
-                new_ill.data_file = icon["file"]
-                new_ill.origin_file = icon["origin_file"]
-                new_ill.data_type = "illustration"
-                new_ill.save()
-            j += 1
-        pass
+                if a == 1 and show_svg[i] == "-":
+                    i += 1
+                    x = ""
+                    while show_svg[i].isdigit() or show_svg[i] == '.':
+                        x += show_svg[i]
+                        i += 1
+                    x = float(x)
+                    x = max(896, float('%.1f' % x)) - min(896, float('%.1f' % x))
+                    x = str(float('%.1f' % x))
+                    if x[-1] == '0':
+                        x = x[:-2]
+                    for _ in x:
+                        svg.append(_)
+                    svg.append(show_svg[i])
+                    a = 0
+                i += 1
+            if i >= len(show_svg):
+                break
+            svg.append(show_svg[i])
+            show_svg = show_svg[i:]
+        svg = "".join(svg)
+        return svg
 
 
 def getAccessToken(url: str):
@@ -166,7 +142,6 @@ def getUserInfo(url: str, token: str):
 
 
 def add_user(user_info_dict: dict):
-    print("到了")
     new_user = user()
     new_user.user_id = user_info_dict["id"]
     new_user.password = user_info_dict.get("node_id")
