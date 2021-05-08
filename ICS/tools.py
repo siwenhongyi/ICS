@@ -7,9 +7,6 @@ import requests
 from bs4 import BeautifulSoup
 import validators
 from ICS.models import *
-
-path = "C:/Users/HongYi/Desktop/论文/毕设"
-users = [10000, 10001, 10002]
 style = 'style="width: 1em;height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;"'
 
 

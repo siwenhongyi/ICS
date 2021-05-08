@@ -72,7 +72,7 @@ class data(models.Model):
     show_svg = models.TextField(blank=True, null=True)
     prototype_svg = models.TextField(blank=True, null=True)
     path_attributes = models.TextField(blank=True, null=True)
-    # 表示上传了还是完成了 1 2
+    # 表示上传了还是完成了 1 0
     category_id = models.IntegerField(blank=True, null=True)
     created_user = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)

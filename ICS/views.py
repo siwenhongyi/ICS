@@ -6,6 +6,7 @@ from django.http import HttpRequest, HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render
 from django.core.files.uploadedfile import InMemoryUploadedFile
 import ICS.tools as my_tools
+import ICS.icon_spider as spider
 from ICS.models import *
 from ICS.api_search import ApiSearch
 from ICS.api_user import ApiUser
@@ -33,6 +34,7 @@ def pub_info(req: HttpRequest):
     :param req:
     :return: userinfo json
     """
+    # spider.GetDataBySpider().get_icon()
     resp = {
         "code": 200,
         "data": {},
@@ -70,6 +72,7 @@ def pub_info(req: HttpRequest):
 
 
 def index(req: HttpRequest):
+    # spider.GetDataBySpider().get_ill()
     resp = render(
         req,
         template_name='index.html',
@@ -86,13 +89,17 @@ def api(req: HttpRequest, **kwargs):
         return pub_info(req)
     elif path[-1] == 'indexConfig.json':
         return index_config(req)
+    elif path[-1] == 'suggest.json':
+        res = ApiSearch(key=req.GET.get('q', "icon"), dt=req.GET.get('type', 'icon'), mode=path[-1]).get_res()
+        resp["data"] = res
+        return HttpResponse(json.dumps(resp), content_type='application/json')
     elif path[-1] == 'search.json':
         m = {
             "icon": "icons",
             "illustration": "icons",
             "user": "users",
         }
-        icons = ApiSearch(key=req.POST.get("q"), mode=path[0]).get_res()
+        icons = ApiSearch(key=req.POST.get('q', 'icon'), dt="", mode=path[0]).get_res()
         icons_count = len(icons)
         resp["data"] = {
             "count": icons_count,
@@ -139,6 +146,37 @@ def api(req: HttpRequest, **kwargs):
             res["repositorie"] = icon.libs_belongs_to
             m.append(res)
         resp["data"] = {"icons": m}
+        return HttpResponse(json.dumps(resp), content_type="application/json")
+    elif path[-1] == 'addFavor.json':
+        resp['data'] = {'type': 1}
+        uid = req.COOKIES.get('u',None)
+        did = req.POST.get('id',None)
+        if uid is None or did is None:
+            resp["code"] = 300
+        else:
+            u = user.objects.filter(user_id=int(uid))
+            d = data.objects.filter(data_id=int(did))
+            if len(u) !=1 or len(d) != 1:
+                resp["code"] = 300
+            else:
+                fav = favorites()
+                fav.user_id = u.first()
+                fav.data_id = d.first()
+                fav.save()
+        return HttpResponse(json.dumps(resp), content_type="application/json")
+    elif path[-1] == 'removeFavor.json':
+        uid = req.COOKIES.get('u',None)
+        did = req.POST.get('id',None)
+        if uid is None or did is None:
+            resp["code"] = 300
+        else:
+            u = user.objects.filter(user_id=int(uid))
+            d = data.objects.filter(data_id=int(did))
+            if len(u) == 1 and len(d) == 1:
+                fav = favorites.objects.filter(user_id=u.first()).filter(data_id=d.first())
+                for _ in fav:
+                    _.delete()
+        resp["data"] = (resp["code"] == 200)
         return HttpResponse(json.dumps(resp), content_type="application/json")
     elif path[0] == 'svg' or path[0] == 'icon':
         info = ApiDataInfo(req, info_type=path[-1]).run()

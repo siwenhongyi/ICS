@@ -37,5 +37,4 @@ urlpatterns = [
     path('search/index', index),
     url(r'^api/(?P<path>.*)$', api),
     url(r'^mm/(?P<path>.*)$', serve, {"document_root": settings.STATIC_ROOT, "content_type": "application/javascript"}),
-
 ]

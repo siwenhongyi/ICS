@@ -1,10 +1,12 @@
+from django.http import HttpRequest
 from ICS.models import *
 from django.db.models import Q
 import datetime
 
 
 class ApiSearch:
-    def __init__(self, key: str, mode='icon'):
+    def __init__(self, key: str, dt: str, mode='icon'):
+        self.dt = dt
         self.key = key
         self.mode = mode
         # run()
@@ -16,14 +18,44 @@ class ApiSearch:
             return self.get_illustration()
         elif self.mode == 'user':
             return self.get_user()
+        elif self.mode == 'suggest.json':
+            return self.get_temp_res()
         else:
             return []
+
+    def get_temp_res(self):
+        res = list()
+        if self.dt == 'icon':
+            res = self.get_icon()
+        elif self.dt == 'illustration':
+            res = self.get_illustration()
+        elif self.dt == 'user':
+            res = self.get_user()
+        else:
+            return None
+        arg_dict = {
+            'icon': 'icons',
+            'illustration': 'svgs',
+            'user': 'users',
+        }
+        ret = {
+            'icons': [],
+            'svgs': [],
+            'users': []
+        }
+        for i in res:
+            m = {
+                'id': i['id'],
+                'name': i['name'],
+            }
+            ret[arg_dict[self.dt]].append(m)
+        return ret
 
     def get_icon(self):
         res = list()
         icons = data.objects.filter(data_type='icon').filter(category_id=1).filter(Q(slug__icontains=self.key) |
-                                                             Q(name__icontains=self.key) |
-                                                             Q(font_class__icontains=self.key))
+                                                                                   Q(name__icontains=self.key) |
+                                                                                   Q(font_class__icontains=self.key))
         for icon in icons:
             t = dict()
             flag = False

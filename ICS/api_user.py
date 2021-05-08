@@ -29,6 +29,9 @@ class ApiUser:
         elif enum == 'update.json':
             return self.update()
         elif enum == 'collections.json':
+            self.req.COOKIES['u'] = self.req.GET['uid']
+            return self.get_my_libs()
+
             return {"collections": []}
         elif enum == 'likes.json':
             return {"icons": []}
@@ -74,7 +77,7 @@ class ApiUser:
         icons = self.get_icons_or_ills(dt='icon')
         limit = int(self.req.GET.get("limit", "15"))
         res = {
-            "count": len(icons),
+            "count": len(data.objects.filter(created_user=int(self.req.COOKIES.get("u", "0"))).filter(category_id=1)),
             "limit": limit,
             "page": len(icons) // limit + 1,
         }
@@ -126,7 +129,7 @@ class ApiUser:
         :return: get all need data
         """
         u_id = int(self.req.COOKIES.get("u", "0"))
-        libs = iconLibs.objects.filter(created_user=u_id)
+        libs = iconLibs.objects.filter(created_user=u_id).filter(libs_type=self.req.GET.get('type','icon'))
         res = dict()
         m = list()
         for lib in libs:
@@ -268,7 +271,7 @@ class ApiUser:
         }
         if self.req.COOKIES.get('u') == str(u_id):
             res["qq"] =u.qq,
-            res["show_email"] = u.show_email
+            res["show_email"] = u.email
         return res
 
     def update(self):
