@@ -35,7 +35,7 @@ class GetDataBySpider:
         self.data_dict = {
             "sortType": "updated_at",
             "page": 1,
-            "pageSize": 2000,
+            "pageSize": 500,
             "fromCollection": 1,
             "fills": 1,
             't': time.time(),
